@@ -4,14 +4,12 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 
 @Entity(name = "cryptocurrencies")
 @Table
 @Getter
 @Setter
-public class Cryptocurrencie {
+public class Crypto {
     @Id
     @SequenceGenerator(name = "cryptocurrencie_sequence",
             sequenceName = "cryptocurrencie_sequence",
@@ -22,46 +20,44 @@ public class Cryptocurrencie {
     private Long id;
     private String symbol;
     private String name;
-    @Column(name = "price_irt")
-    private float priceIRT;
-    @Column(name = "price_usdt")
 
-    private float priceUSDT;
+    private String fiat;
+    @Column(name = "price_irt")
+    private float price;
+
+    @Column(name = "last_day_change")
 
     private float lastDayChange;
-
-    public Cryptocurrencie() {
+    public Crypto() {
     }
 
-    public Cryptocurrencie(Long id, String symbol, String name, float priceIRT, float priceUSDT, float lastDayChange) {
-        this.id = id;
+    public Crypto(String symbol, String name, String fiat, float price, float lastDayChange) {
         this.symbol = symbol;
         this.name = name;
-        this.priceIRT = priceIRT;
-        this.priceUSDT = priceUSDT;
+        this.fiat = fiat;
+        this.price = price;
         this.lastDayChange = lastDayChange;
     }
 
-    public Cryptocurrencie(String symbol, String name, float priceIRT, float priceUSDT, float lastDayChange) {
+    public Crypto(Long id, String symbol, String name, String fiat, float price, float lastDayChange) {
+        this.id = id;
         this.symbol = symbol;
         this.name = name;
-        this.priceIRT = priceIRT;
-        this.priceUSDT = priceUSDT;
+        this.fiat = fiat;
+        this.price = price;
         this.lastDayChange = lastDayChange;
     }
 
     @Override
     public String toString() {
-        return "Cryptocurrencie{" +
+        return "Crypto{" +
                 "id=" + id +
                 ", symbol='" + symbol + '\'' +
                 ", name='" + name + '\'' +
-                ", priceIRT=" + priceIRT +
-                ", priceUSDT=" + priceUSDT +
+                ", fiat='" + fiat + '\'' +
+                ", price=" + price +
                 ", lastDayChange=" + lastDayChange +
                 '}';
     }
-
-
 }
 

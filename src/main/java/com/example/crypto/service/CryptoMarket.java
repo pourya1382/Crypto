@@ -1,6 +1,6 @@
 package com.example.crypto.service;
 
-import com.example.crypto.model.Cryptocurrencie;
+import com.example.crypto.model.Crypto;
 import com.example.crypto.repository.CryptocurrencieRepository;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,10 +17,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 @Component
-public class CryptoConfig {
+public class CryptoMarket {
     private CryptocurrencieRepository repository;
 
-    public CryptoConfig(CryptocurrencieRepository repository) {
+    public CryptoMarket(CryptocurrencieRepository repository) {
         this.repository = repository;
     }
 
@@ -29,8 +29,8 @@ public class CryptoConfig {
 
     static Boolean changeMarket = false;
 
-    List<Cryptocurrencie> cryptos = new ArrayList<>();
-    Cryptocurrencie cryptocurrencie;
+    List<Crypto> cryptos = new ArrayList<>();
+    Crypto crypto;
     static HashMap<String, Float> nameAndChange = new HashMap<>();
     static Boolean giveAllCryptos = true;
 
@@ -49,7 +49,7 @@ public class CryptoConfig {
             System.out.println("giveAllCryptos: " + giveAllCryptos);
             System.out.println("changeMarket: " + changeMarket);
             getSymbols(getCrypto(reasonString));
-            getMarketInfoIRT(reasonString);
+            getMarketInfoPrice(reasonString);
             if (giveAllCryptos == true) {
                 cryptos = repository.saveAll(cryptos);
                 giveAllCryptos = false;
@@ -95,13 +95,13 @@ public class CryptoConfig {
         JSONArray forsymbols = new JSONArray(responseBody);
         for (int i = 0; i < forsymbols.length(); i++) {
             JSONObject forsymbol = forsymbols.getJSONObject(i);
-            Cryptocurrencie cryptocurrencie = new Cryptocurrencie();
+            Crypto crypto = new Crypto();
             symbol = forsymbol.getString("symbol");
-            cryptocurrencie.setSymbol(symbol);
+            crypto.setSymbol(symbol);
             name = forsymbol.getString("name");
-            cryptocurrencie.setName(name);
+            crypto.setName(name);
             if (giveAllCryptos == true) {
-                cryptos.add(cryptocurrencie);
+                cryptos.add(crypto);
 
             }
         }
@@ -109,7 +109,7 @@ public class CryptoConfig {
 
     }
 
-    public void getMarketInfoIRT(String responseBody) throws JSONException {
+    public void getMarketInfoPrice(String responseBody) throws JSONException {
         JSONArray albums = new JSONArray(responseBody);
         String value = null;
         String values = null;
@@ -132,23 +132,25 @@ public class CryptoConfig {
             float newPrice = Float.valueOf(forLastPrice.getString("lastPrice"));
             if (giveAllCryptos == true) {
                 if (cryptos.get(i).getSymbol().equals(lastSymbol)) {
-                    cryptos.get(i).setPriceUSDT(Float.valueOf(forLastPrice.getString("lastPrice")));
+                    cryptos.get(i).setPrice(Float.valueOf(forLastPrice.getString("lastPrice")));
                     cryptos.get(i).setLastDayChange(Float.valueOf(forLastPrice.getString("lastDayChange")));
+                    cryptos.get(i).setFiat("USDT");
                     lastChangesTaken.add(Float.valueOf(forLastPrice.getString("lastDayChange")));
                 } else {
-                    cryptos.get(i).setPriceIRT(Float.valueOf(forLastPrice.getString("lastPrice")));
+                    cryptos.get(i).setPrice(Float.valueOf(forLastPrice.getString("lastPrice")));
                     cryptos.get(i).setLastDayChange(Float.valueOf(forLastPrice.getString("lastDayChange")));
+                    cryptos.get(i).setFiat("IRT");
                     lastChangesTaken.add(Float.valueOf(forLastPrice.getString("lastDayChange")));
                 }
                 lastSymbol = cryptos.get(i).getSymbol();
             } else if (Float.valueOf(forLastPrice.getString("lastDayChange"))-lastChangesTaken.get(i) >= 2 || Float.valueOf(forLastPrice.getString("lastDayChange"))-lastChangesTaken.get(i) <= -2) {
                 changeMarket = true;
                 lastChangesTaken.set(i,Float.valueOf(forLastPrice.getString("lastDayChange")));
-                cryptocurrencie = repository.findById((long) (i + 1)).get();
-                cryptocurrencie.setLastDayChange(Float.valueOf(forLastPrice.getString("lastDayChange")));
-                cryptocurrencie.setPriceIRT(Float.valueOf(forLastPrice.getString("lastPrice")));
-                repository.save(cryptocurrencie);
-                nameAndChange.put(cryptocurrencie.getName(), cryptocurrencie.getLastDayChange());
+                crypto = repository.findById((long) (i + 1)).get();
+                crypto.setLastDayChange(Float.valueOf(forLastPrice.getString("lastDayChange")));
+                crypto.setPrice(Float.valueOf(forLastPrice.getString("lastPrice")));
+                repository.save(crypto);
+                nameAndChange.put(crypto.getName(), crypto.getLastDayChange());
             }
         }
     }

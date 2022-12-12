@@ -11,11 +11,11 @@ import java.time.LocalTime;
 
 @Service
 public class CryptoChanges extends Thread {
-    private CryptoConfig config;
+    private CryptoMarket config;
     @Autowired
     private JavaMailSender mailSender;
 
-    public CryptoChanges(CryptoConfig config) {
+    public CryptoChanges(CryptoMarket config) {
         this.config = config;
     }
 

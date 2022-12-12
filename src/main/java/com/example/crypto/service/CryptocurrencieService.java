@@ -1,8 +1,9 @@
 package com.example.crypto.service;
 
 
-import com.example.crypto.model.Cryptocurrencie;
+import com.example.crypto.model.Crypto;
 import com.example.crypto.repository.CryptocurrencieRepository;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,10 +24,10 @@ public class CryptocurrencieService {
         this.changes = changes;
     }
 
-    public Page<Cryptocurrencie> getCrypto(int page, int size, String symbol, String sort, String fiat) {
+    public Page<Crypto> getCrypto(int page, int size, String symbol, String sort, String fiat) {
+        System.out.println("symbol: " + symbol);
         Pageable pageable = PageRequest.of(page, size);
-        Float priceIRT;
-        Float priceUSDT;
+
         if (!sort.isEmpty()) {
             switch (sort) {
                 case "sort_by_price":
@@ -37,27 +38,28 @@ public class CryptocurrencieService {
                     break;
             }
         }
-        Page<Cryptocurrencie> cryptos;
-        if (fiat.equals("IRT")) {
-            priceUSDT = Float.valueOf(0);
-            cryptos = repository.findAll(Specification.where(CryptoSearch.containIRT(priceUSDT))
-                    .or(CryptoSearch.getSymbol(symbol)), pageable);
-        } else if (fiat.equals("USDT")) {
-            priceIRT = Float.valueOf(0);
-            cryptos = repository.findAll(Specification.where(CryptoSearch.containUSDT(priceIRT))
-                    .or(CryptoSearch.getSymbol(symbol)), pageable);
-
+        Page<Crypto> cryptos;
+        if (!symbol.isEmpty()) {
+            cryptos = repository.findAll(Specification.where(CryptoSearch.getSymbol(symbol).and(CryptoSearch.searchFiat(fiat))), pageable);
         } else {
-            cryptos = repository.findAll(Specification.where(CryptoSearch.getSymbol(symbol)),
-                    pageable);
+            cryptos = repository.findAll(Specification.where(CryptoSearch.searchFiat(fiat)),pageable);
+        }
+        if (cryptos.isEmpty()) {
+            cryptos = repository.findAll(Specification.where(CryptoSearch.searchFiat(fiat)), pageable);
+            System.out.println("cryptos: " + cryptos.getContent());
         }
 
         return cryptos;
     }
 
+    @Bean
     public void getEmail() {
         changes.start();
     }
 
 
+    public Page<Crypto> getAllCryptos(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return repository.findAll(pageable);
+    }
 }
