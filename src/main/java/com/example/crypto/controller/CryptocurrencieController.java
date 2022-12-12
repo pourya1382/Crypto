@@ -1,4 +1,5 @@
 package com.example.crypto.controller;
+
 import com.example.crypto.model.Cryptocurrencie;
 import com.example.crypto.service.CryptocurrencieService;
 import org.springframework.data.domain.Page;
@@ -12,17 +13,23 @@ public class CryptocurrencieController {
     public CryptocurrencieController(CryptocurrencieService service) {
         this.service = service;
     }
-    @GetMapping()
-    public Page<Cryptocurrencie> getCryoto(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "3") int size, @RequestParam() String symbol){
 
-        return service.getCrypto(page,size,symbol);
+    @GetMapping("{symbol}")
+    public Page<Cryptocurrencie> getCryoto(@RequestParam(defaultValue = "0") int page,
+                                           @RequestParam(defaultValue = "3") int size,
+                                           @PathVariable(value = "symbol",required = false) String symbol,
+                                           @RequestParam(required = false) String sort,
+                                           @RequestParam(required = false) String fiat
+    ) {
+
+        return service.getCrypto(page, size, symbol,sort,fiat);
     }
+
     @PostMapping("/get_email")
-    public void getEmail(){
+    public void getEmail() {
         service.getEmail();
 
     }
-
 
 
 }
