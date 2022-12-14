@@ -109,15 +109,17 @@ public class CryptoMarket {
 
                 emailService.sendEmail(
                         crypto.getName() + " change around " + changePercent + "%");
-
             }
         }
     }
 
     public void setMarket(String fiat, int i, JSONObject forLastPriceJson) throws JSONException {
         cryptos.get(i).setPrice(Float.valueOf(forLastPriceJson.getString("lastPrice")));
+
         cryptos.get(i).setLastDayChange(Float.valueOf(forLastPriceJson.getString("lastDayChange")));
+
         cryptos.get(i).setFiat(fiat);
+
         lastChangesTaken.add(cryptos.get(i).getPrice());
     }
 
