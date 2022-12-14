@@ -17,6 +17,7 @@ public class EmailService {
         message.setText(text);
         message.setSubject("change in market!");
         mailSender.send(message);
+
     }
 
 
