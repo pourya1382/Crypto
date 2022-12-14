@@ -107,8 +107,8 @@ public class CryptoMarket {
 
                 repository.save(crypto);
 
-//                emailService.sendEmail(
-//                        crypto.getName() + " change around " + changePercent + "%");
+                emailService.sendEmail(
+                        crypto.getName() + " change around " + changePercent + "%");
 
             }
         }
