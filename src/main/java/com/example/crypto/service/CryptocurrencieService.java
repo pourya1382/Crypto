@@ -27,26 +27,26 @@ public class CryptocurrencieService {
         if (!sort.isEmpty()) {
             switch (sort) {
                 case "sort_by_price":
-                    pageable = PageRequest.of(page, size, Sort.by("priceIRT").descending());
+                    pageable = PageRequest.of(page, size, Sort.by("price").descending());
                     break;
                 case "sort_by_price_descending":
-                    pageable = PageRequest.of(page, size, Sort.by("priceIRT"));
+                    pageable = PageRequest.of(page, size, Sort.by("price"));
                     break;
             }
         }
         Page<Crypto> cryptos;
-        if (!symbol.isEmpty()) {
+        cryptos = repository.findAll(pageable);
+        if (!symbol.isEmpty() || !fiat.isEmpty()) {
             cryptos = repository.findAll(Specification.where(CryptoSearch.getSymbol(symbol)
-                    .and(CryptoSearch.searchFiat(fiat))),
+                            .and(CryptoSearch.searchFiat(fiat))),
                     pageable);
-        } else {
-            cryptos = repository.findAll(Specification.where(CryptoSearch.searchFiat(fiat)), pageable);
+        }
+        if (cryptos.isEmpty()) {
+            cryptos = repository.findAll(Specification.where(CryptoSearch.getSymbol(symbol)
+                            .or(CryptoSearch.searchFiat(fiat))),
+                    pageable);
         }
 
-        if (cryptos.isEmpty()) {
-            cryptos = repository.findAll(Specification.where(CryptoSearch.searchFiat(fiat)), pageable);
-            System.out.println("cryptos: " + cryptos.getContent());
-        }
         return cryptos;
     }
 

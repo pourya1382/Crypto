@@ -26,6 +26,7 @@ public class CryptoSearch {
         });
 
     }
+
     public static Specification<Crypto> searchFiat(String fiat) {
         return ((cryptoRoot, cq, cb) -> {
             return cb.equal(cryptoRoot.get("fiat"), fiat);

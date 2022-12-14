@@ -18,13 +18,12 @@ public class CryptocurrencieController {
     public Page<Crypto> getCryoto(@RequestParam(defaultValue = "0") int page,
                                   @RequestParam(defaultValue = "3") int size,
                                   @RequestParam(required = false) String symbol,
-                                  @RequestParam(required = false) String sort,
-                                  @RequestParam(required = false) String fiat
+                                  @RequestParam(required = false, defaultValue = "") String sort,
+                                  @RequestParam(required = false, defaultValue = "") String fiat
     ) {
 
-        return service.getCrypto(page, size, symbol,sort,fiat);
+        return service.getCrypto(page, size, symbol, sort, fiat);
     }
-
 
 
 }

@@ -41,7 +41,7 @@ public class CryptoMarket {
     }
 
     @Scheduled(cron = "0 0 20 * * *")
-    public void getAllMarketAt8(){
+    public void getAllMarketAt8() {
         giveAllCryptos = true;
     }
 
@@ -88,12 +88,13 @@ public class CryptoMarket {
                     setMarket("IRT", i, forLastPriceJson);
                 }
                 lastSymbol = cryptos.get(i).getSymbol();
-            } else if ((Float.valueOf(forLastPriceJson.getString("lastPrice")) - lastChangesTaken.get(i)) / 100 >= 0.005
-                    || (Float.valueOf(forLastPriceJson.getString("lastPrice")) - lastChangesTaken.get(i)) / 100 <= -0.005
-            ) {
+            }
+            float changePercent = ((Float.valueOf(forLastPriceJson.getString("lastPrice")) - lastChangesTaken.get(i)) * 100)
+                    / lastChangesTaken.get(i);
 
-                float changePercent = (Float.valueOf(forLastPriceJson.getString("lastPrice")) - lastChangesTaken.get(i));
-
+            if (changePercent >= 0.005 || changePercent <= -0.005) {
+                System.out.println("new price: " + (Float.valueOf(forLastPriceJson.getString("lastPrice"))));
+                System.out.println("last price: " + lastChangesTaken.get(i));
                 changeMarket = true;
 
                 lastChangesTaken.set(i, Float.valueOf(forLastPriceJson.getString("lastDayChange")));
@@ -106,8 +107,8 @@ public class CryptoMarket {
 
                 repository.save(crypto);
 
-                emailService.sendEmail(
-                        crypto.getName() + " change around " + changePercent + "%");
+//                emailService.sendEmail(
+//                        crypto.getName() + " change around " + changePercent + "%");
 
             }
         }
@@ -117,7 +118,7 @@ public class CryptoMarket {
         cryptos.get(i).setPrice(Float.valueOf(forLastPriceJson.getString("lastPrice")));
         cryptos.get(i).setLastDayChange(Float.valueOf(forLastPriceJson.getString("lastDayChange")));
         cryptos.get(i).setFiat(fiat);
-        lastChangesTaken.add(Float.valueOf(forLastPriceJson.getString("lastPrice")));
+        lastChangesTaken.add(cryptos.get(i).getPrice());
     }
 
 
