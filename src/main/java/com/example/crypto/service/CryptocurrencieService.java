@@ -14,14 +14,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class CryptocurrencieService {
     private CryptocurrencieRepository repository;
-    private CryptoChanges changes;
 
 
-    public CryptocurrencieService(CryptocurrencieRepository repository,
-                                  CryptoChanges changes
-    ) {
+    public CryptocurrencieService(CryptocurrencieRepository repository) {
         this.repository = repository;
-        this.changes = changes;
     }
 
     public Page<Crypto> getCrypto(int page, int size, String symbol, String sort, String fiat) {
@@ -40,21 +36,18 @@ public class CryptocurrencieService {
         }
         Page<Crypto> cryptos;
         if (!symbol.isEmpty()) {
-            cryptos = repository.findAll(Specification.where(CryptoSearch.getSymbol(symbol).and(CryptoSearch.searchFiat(fiat))), pageable);
+            cryptos = repository.findAll(Specification.where(CryptoSearch.getSymbol(symbol)
+                    .and(CryptoSearch.searchFiat(fiat))),
+                    pageable);
         } else {
-            cryptos = repository.findAll(Specification.where(CryptoSearch.searchFiat(fiat)),pageable);
+            cryptos = repository.findAll(Specification.where(CryptoSearch.searchFiat(fiat)), pageable);
         }
+
         if (cryptos.isEmpty()) {
             cryptos = repository.findAll(Specification.where(CryptoSearch.searchFiat(fiat)), pageable);
             System.out.println("cryptos: " + cryptos.getContent());
         }
-
         return cryptos;
-    }
-
-    @Bean
-    public void getEmail() {
-        changes.start();
     }
 
 

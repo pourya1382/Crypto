@@ -25,11 +25,6 @@ public class CryptocurrencieController {
         return service.getCrypto(page, size, symbol,sort,fiat);
     }
 
-    @PostMapping("/get_email")
-    public void getEmail() {
-        service.getEmail();
-
-    }
 
 
 }
